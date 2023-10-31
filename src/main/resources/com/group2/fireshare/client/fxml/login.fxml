@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.group2.fireshare.client.controller.LoginController">
+   <children>
+      <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0">
+      
+          <columnConstraints>
+              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" prefWidth="50.0" />
+              <ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="97.0" />
+              <ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="300.0" />
+              <ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" prefWidth="50.0" />
+          </columnConstraints>
+          <rowConstraints>
+              <RowConstraints minHeight="10.0" prefHeight="-Infinity" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="-Infinity" vgrow="SOMETIMES" />
+          </rowConstraints>
+          <children>
+              <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Connect to Server" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                  <font>
+                      <Font name="Arial" size="48.0" />
+                  </font>
+              </Label>
+              <Label prefHeight="25.0" prefWidth="88.0" text="Server IP" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                  <font>
+                      <Font size="16.0" />
+                  </font>
+            </Label>
+              <TextField fx:id="ip" prefHeight="40.0" prefWidth="333.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                  <font>
+                      <Font size="16.0" />
+                  </font>
+            </TextField>
+              <Label prefHeight="25.0" prefWidth="75.0" text="Port" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                  <font>
+                      <Font size="16.0" />
+                  </font>
+            </Label>
+              <TextField fx:id="port" prefHeight="40.0" prefWidth="333.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                  <font>
+                      <Font size="16.0" />
+                  </font>
+            </TextField>
+              <Label prefHeight="25.0" prefWidth="91.0" text="Repository" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                  <font>
+                      <Font size="16.0" />
+                  </font>
+              </Label>
+              <TextField fx:id="repoFolder" prefHeight="40.0" prefWidth="326.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                  <font>
+                      <Font size="16.0" />
+                  </font>
+            </TextField>
+              <StackPane GridPane.columnIndex="3" GridPane.rowIndex="4">
+                  <children>
+                      <Button fx:id="chooseFolderButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="129.0" text="Choose Folder" onAction="#onChooseFolderButtonClick">
+                          <font>
+                              <Font size="16.0" />
+                          </font>
+                  </Button>
+                  </children>
+                  <padding>
+                      <Insets bottom="10.0" left="10.0" top="10.0" />
+                  </padding>
+              </StackPane>
+              <StackPane GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="5">
+                      <Button fx:id="connectButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectButtonClick" prefHeight="40.0" prefWidth="100.0" text="Connect">
+                          <font>
+                              <Font size="16.0" />
+                          </font>
+                  </Button>
+              </StackPane>
+          </children>
+      </GridPane>
+   </children>
+</AnchorPane>
