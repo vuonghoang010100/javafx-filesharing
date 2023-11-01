@@ -15,4 +15,5 @@ module com.group2.fireshare {
     opens com.group2.fireshare.server to javafx.fxml;
     exports com.group2.fireshare.server.controller;
     opens com.group2.fireshare.server.controller to javafx.fxml;
+    exports com.group2.fireshare.server.model;
 }

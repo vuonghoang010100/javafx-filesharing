@@ -23,10 +23,10 @@
         </rowConstraints>
          <children>
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Files Management" GridPane.columnIndex="1" />
-            <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TableView fx:id="fileTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
               <columns>
-                <TableColumn prefWidth="288.0" text="File Name" />
-                <TableColumn minWidth="0.0" prefWidth="291.0" text="Hostname" />
+                <TableColumn fx:id="fileNameCol" prefWidth="280.0" text="File Name" />
+                <TableColumn fx:id="hostnameCol" minWidth="0.0" prefWidth="280.0" text="Hostname" />
               </columns>
             </TableView>
          </children>
