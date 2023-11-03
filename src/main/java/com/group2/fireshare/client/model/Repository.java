@@ -1,6 +1,5 @@
-package com.group2.fireshare.server.model;
+package com.group2.fireshare.client.model;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -29,30 +28,37 @@ public class Repository {
         fileList.add(fileItem);
     }
 
-    public synchronized void removeFileByHostname(String hostname, int port) {
+    public synchronized boolean hasFile(String pname) {
         if (fileList.isEmpty())
-            return;
-        for (FileItem fileItem : fileList) {
-            if (fileItem.getHostname().equals(hostname) && fileItem.getPort() == port) {
-                // remove later to avoid error
-                Platform.runLater(() -> {
-                    fileList.remove(fileItem);
-                });
+            return false;
+        for (FileItem fileItem:fileList ) {
+            if (fileItem.getPname().equals(pname)) {
+                return true;
             }
         }
+        return false;
     }
 
-    public synchronized FileItem getFirstFileItemByName(String name) {
-        // TODO: return List<FileItem> in case improve fetch method
-        // Because FileItem doesn't have setter -> doesn't conflict in concurrency
+    public synchronized String getFilePath(String pname) {
         if (fileList.isEmpty())
-            return null;
-        for (FileItem fileItem : fileList) {
-            if (fileItem.getFileName().equals(name)) {
-                return fileItem;
+            return "";
+        for (FileItem fileItem:fileList ) {
+            if (fileItem.getPname().equals(pname)) {
+                return fileItem.getLname();
             }
         }
-        return null;
+        return "";
+    }
+
+    public synchronized boolean isFileCreatedByConsole(String filename) {
+        if (fileList.isEmpty())
+            return false;
+        for (FileItem fileItem:fileList ) {
+            if (fileItem.getPname().equals(filename)) {
+                return fileItem.isCreatedByConsole();
+            }
+        }
+        return false;
     }
 
 }

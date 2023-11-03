@@ -22,7 +22,16 @@ public class ManageClientsController implements Initializable {
     @FXML
     TableColumn<User, Integer> portCol;
 
-    private ObservableList<User> userList;
+    @FXML
+    protected void discoverHost() {
+
+    }
+
+    @FXML
+    protected void pingHost() {
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Bind data
@@ -32,4 +41,5 @@ public class ManageClientsController implements Initializable {
         // Set data to table view
         clientTable.setItems(UserList.getInstance().getUserList());
     }
+
 }

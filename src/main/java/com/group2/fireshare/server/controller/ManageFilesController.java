@@ -1,6 +1,6 @@
 package com.group2.fireshare.server.controller;
 
-import com.group2.fireshare.server.model.File;
+import com.group2.fireshare.server.model.FileItem;
 import com.group2.fireshare.server.model.Repository;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,17 +13,17 @@ import java.util.ResourceBundle;
 
 public class ManageFilesController implements Initializable {
     @FXML
-    private TableView<File> fileTable;
+    private TableView<FileItem> fileTable;
     @FXML
-    private TableColumn<File,String> fileNameCol;
+    private TableColumn<FileItem,String> fileNameCol;
     @FXML
-    private TableColumn<File,String> hostnameCol;
+    private TableColumn<FileItem,String> hostnameCol;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Bind data
-        fileNameCol.setCellValueFactory(new PropertyValueFactory<File,String>("fileName"));
-        hostnameCol.setCellValueFactory(new PropertyValueFactory<File,String>("hostname"));
+        fileNameCol.setCellValueFactory(new PropertyValueFactory<>("fileName"));
+        hostnameCol.setCellValueFactory(new PropertyValueFactory<>("hostname"));
         // Set data to table view
         fileTable.setItems(Repository.getInstance().getFileList());
     }

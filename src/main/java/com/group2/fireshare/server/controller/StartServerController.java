@@ -23,18 +23,14 @@ public class StartServerController implements Initializable {
     private TextField port;
     @FXML
     protected void onStartButtonClick() {
-        // TODO 1. verify port is number (0->65000 <- change this range to right range)
-        // Prefer move it to Utils class and reuse Client app
-        // example: Check port not empty
-        if (port.getText().isEmpty()) {
-            Utils.showAlert(Alert.AlertType.ERROR, "Port Error!", "Please input port number");
+        // Verify port
+        if (!Utils.isValidPortNumber(port.getText())) {
             return;
         }
-        // TODO Check port is number
+        int portNo = Integer.parseInt(port.getText());
 
-        // TODO Check port is in range Registered ports: 1024 to 49151
-
-        Server.getInstance().startServer(Integer.parseInt(port.getText()));
+        // Start server
+        Server.getInstance().startServer(portNo);
     }
 
 

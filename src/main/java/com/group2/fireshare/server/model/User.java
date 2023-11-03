@@ -1,10 +1,5 @@
 package com.group2.fireshare.server.model;
 
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.chart.PieChart;
-
 import java.io.DataOutputStream;
 
 public class User {
@@ -12,6 +7,7 @@ public class User {
     private String ip;
     private int port;
     private DataOutputStream dos;
+    private int listenPort;
 
     public User(String hostname, String ip, int port, DataOutputStream dos) {
         this.hostname = hostname;
@@ -24,31 +20,23 @@ public class User {
         return hostname;
     }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
     public String getIp() {
         return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
     public DataOutputStream getDos() {
         return dos;
     }
 
-    public void setDos(DataOutputStream dos) {
-        this.dos = dos;
+    public int getListenPort() {
+        return listenPort;
+    }
+
+    public void setListenPort(int listenPort) {
+        this.listenPort = listenPort;
     }
 }

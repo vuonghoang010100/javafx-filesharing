@@ -14,7 +14,6 @@ public class UserList {
             synchronized (UserList.class){
                 if (instance == null){
                     instance = new UserList();
-//                    instance.setUserList(FXCollections.observableArrayList());
                 }
             }
         }
@@ -38,5 +37,27 @@ public class UserList {
                 return;
             }
         }
+    }
+
+    public synchronized void addListenPort(String ip, int port, int listenPort) {
+        if (userList.isEmpty())
+            return;
+        for (User user: userList) {
+            if (user.getIp().equals(ip) && user.getPort() == port) {
+                user.setListenPort(listenPort);
+                return;
+            }
+        }
+    }
+
+    public synchronized int findListenPortOfUser(String ip, int port) {
+        if (userList.isEmpty())
+            return -1;
+        for (User user: userList) {
+            if (user.getIp().equals(ip) && user.getPort() == port) {
+                return user.getListenPort();
+            }
+        }
+        return -1;
     }
 }

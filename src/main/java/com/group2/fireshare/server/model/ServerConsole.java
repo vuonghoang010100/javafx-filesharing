@@ -1,39 +1,37 @@
 package com.group2.fireshare.server.model;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
-public class ConsoleLog {
-    private static ConsoleLog instance;
+public class ServerConsole {
+    private static ServerConsole instance;
     private SimpleStringProperty text = new SimpleStringProperty("\r");
 
-    private ConsoleLog(){}
+    private ServerConsole(){}
 
-    public static ConsoleLog getInstance() {
+    public static ServerConsole getInstance() {
         if (instance == null){
-            synchronized (ConsoleLog.class){
+            synchronized (ServerConsole.class){
                 if (instance == null){
-                    instance = new ConsoleLog();
+                    instance = new ServerConsole();
                 }
             }
         }
         return instance;
     }
 
-    public String getText() {
-        return text.get();
-    }
-
     public SimpleStringProperty textProperty() {
         return text;
     }
 
-    public void setText(String text) {
+    public synchronized String getText() {
+        return text.get();
+    }
+
+    public synchronized void setText(String text) {
         this.text.set(text);
     }
 
-    public void addText(String text) {
+    public synchronized void addText(String text) {
         this.text.set(this.text.get() + text + "\n");
     }
 }

@@ -1,8 +1,5 @@
 package com.group2.fireshare.server.service;
 
-import com.group2.fireshare.server.model.User;
-import com.group2.fireshare.server.model.UserList;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,11 +8,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerHandler implements Runnable {
-    private ServerSocket serverSocket;
-    private int port;
+    private final ServerSocket serverSocket;
 
     public ServerHandler(int port) {
-        this.port = port;
         try {
             serverSocket = new ServerSocket(port);
             //test log
