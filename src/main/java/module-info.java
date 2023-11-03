@@ -10,9 +10,11 @@ module com.group2.fireshare {
     opens com.group2.fireshare.client to javafx.fxml;
     exports com.group2.fireshare.client.controller;
     opens com.group2.fireshare.client.controller to javafx.fxml;
+    exports com.group2.fireshare.client.model;
 
     exports com.group2.fireshare.server;
     opens com.group2.fireshare.server to javafx.fxml;
     exports com.group2.fireshare.server.controller;
     opens com.group2.fireshare.server.controller to javafx.fxml;
+    exports com.group2.fireshare.server.model;
 }

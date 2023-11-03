@@ -18,10 +18,10 @@
         </rowConstraints>
          <children>
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Repository Management" GridPane.columnIndex="1" />
-            <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TableView fx:id="repoTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
               <columns>
-                <TableColumn prefWidth="177.0" text="Repository Name" />
-                <TableColumn minWidth="0.0" prefWidth="402.0" text="Local Path" />
+                <TableColumn fx:id="pnameCol" prefWidth="177.0" text="Repository Name" />
+                <TableColumn fx:id="lnameCol" minWidth="0.0" prefWidth="402.0" text="Local Path" />
               </columns>
             </TableView>
             <GridPane GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -40,16 +40,16 @@
                <children>
                   <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="3">
                      <children>
-                        <Button mnemonicParsing="false" text="Choose File" />
+                        <Button mnemonicParsing="false" onAction="#chooseFile" text="Choose File" />
                      </children>
                   </StackPane>
                   <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
                      <children>
-                        <Button mnemonicParsing="false" text="Publish" />
+                        <Button mnemonicParsing="false" onAction="#publishFile" text="Publish" />
                      </children>
                   </StackPane>
-                  <TextField GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                  <TextField GridPane.rowIndex="1" />
+                  <TextField fx:id="pnameTextField" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <TextField fx:id="lnameTextField" GridPane.rowIndex="1" />
                   <Label text="Local name" />
                   <Label text="Publish name" GridPane.columnIndex="2" />
                </children>

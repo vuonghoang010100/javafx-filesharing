@@ -1,5 +1,6 @@
 package com.group2.fireshare.server;
 
+import com.group2.fireshare.server.service.ServerHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,6 +11,7 @@ import java.io.IOException;
 public class Server extends Application {
     private static Server instance;
     private Stage stage;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -24,13 +26,12 @@ public class Server extends Application {
         primaryStage.show();
     }
 
-    public void startServer(String port) {
+    public void startServer(int port) {
         try {
-            // TODO 1. preproccess input data
-
-            // TODO 2. Save global data here
-
-            // TODO 3. Start server worker (Socket)
+            // Start Socket server
+            Thread serverHandler = new Thread(new ServerHandler(port));
+            serverHandler.setDaemon(true);
+            serverHandler.start();
 
             // Switch to home View
             FXMLLoader fxmlLoader = new FXMLLoader(Server.class.getResource("fxml/server-home.fxml"));
