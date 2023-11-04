@@ -66,8 +66,13 @@ public class SocketHandler implements Runnable{
         if(requestMatcher.matches()) {
             String method = requestMatcher.group(1).toLowerCase();
             String data = requestMatcher.group(2);
+
             if (method.equalsIgnoreCase("discover")) {
                 processDiscoverPacket(data);
+            } else if (method.equalsIgnoreCase("ping")) {
+                processPingPacket(data);
+            } else {
+               // TODO Process bad request
             }
 
             return;
@@ -209,6 +214,14 @@ public class SocketHandler implements Runnable{
 
 
 
+    }
+
+    public void processPingPacket(String hostname) {
+        try {
+            this.dos.writeUTF("CSFS 200 PING_OK " + "\"" + hostname +"\"");
+        }catch (IOException e) {
+            System.out.println("Send response for DISCOVER request failed " + e);
+        }
     }
 
     public void processCancelFetching(String filename, String content) {

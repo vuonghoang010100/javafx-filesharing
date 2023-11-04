@@ -1,9 +1,12 @@
 package com.group2.fireshare.server.service;
 
 
+import com.group2.fireshare.server.controller.HomeController;
 import com.group2.fireshare.server.model.*;
 import com.group2.fireshare.utils.Utils;
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -99,7 +102,7 @@ public class ClientHandler implements Runnable {
                 processPublishPacket(data);
             } else if (method.equalsIgnoreCase("fetch")) {
                 processFetchPacket(data);
-            } else {
+            }  else {
                 responseBadRequest();
             }
             return;
@@ -123,6 +126,8 @@ public class ClientHandler implements Runnable {
                 System.out.println(responseData);
             } else if (statusCode.equals("205")) {
                 System.out.println("huy empty server");
+            } else if (statusCode.equals("200")) {
+                processStatusCode200(responseData);
             }
 
             return;
@@ -190,6 +195,33 @@ public class ClientHandler implements Runnable {
         String responseData = filename + ":" + file.getIp() + ":" + listenPort;
         sendResponsePacket(202, "FILE_EXIST", responseData);
 
+    }
+
+    public void processDiscoverPacket(String hostName) throws IOException {}
+
+    public void processPingPacket(String hostName) throws IOException {
+        User user = UserList.getInstance().findUserByHostName(hostName);
+
+        if (user == null) {
+            return;
+        }
+
+        DataOutputStream dos = user.getDos();
+        dos.writeUTF("CSFS PING " + user.getHostname());
+    }
+
+    public void processStatusCode200(String hostName) throws IOException {
+        boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
+
+        // Update comments...
+        if (isConsoleViewVisible) {
+            ServerConsole.getInstance().addText(hostName +" is connecting with the server! (ONLINE)");
+            return;
+        }
+
+        Platform.runLater(() -> {
+            Utils.showAlert(Alert.AlertType.INFORMATION , "Ping " + hostName ,  hostName +" is connecting with server! (ONLINE)");
+        });
     }
 
     public void responseBadRequest() throws IOException {

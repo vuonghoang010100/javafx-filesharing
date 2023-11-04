@@ -51,7 +51,22 @@ public class ManageClientsController implements Initializable {
 
     @FXML
     protected void pingHost() {
+        User selectedUser = clientTable.getSelectionModel().getSelectedItem();
 
+        if(selectedUser == null) {
+            return;
+        }
+        String hostname = selectedUser.getHostname();
+        String ip = selectedUser.getIp();
+        int port = selectedUser.getPort();
+        DataOutputStream dos = selectedUser.getDos();
+
+        try {
+            dos.writeUTF("CSFS PING " + "\""+hostname+"\"");
+        }catch (IOException e) {
+            Utils.showAlert(Alert.AlertType.INFORMATION , "PING " + hostname, hostname + " is not connecting with server!");
+            e.printStackTrace(); // Handle connection or IO errors here
+        }
     }
 
     @Override

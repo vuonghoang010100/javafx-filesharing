@@ -5,6 +5,8 @@ public class Settings {
     private String serverIP;
     private Number serverPort;
 
+    private String currentView;
+
     private Settings() {
         // Private constructor to enforce singleton pattern
     }
@@ -30,5 +32,17 @@ public class Settings {
 
     public void setServerPort(Number port) {
         serverPort = port;
+    }
+
+    public String getCurrentView() {
+        return currentView;
+    }
+
+    public void setCurrentView(String currentView) {
+        this.currentView = currentView;
+    }
+
+    public boolean isConsoleViewVisible() {
+        return this.currentView.equals("consoleView");
     }
 }

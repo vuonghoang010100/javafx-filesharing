@@ -60,4 +60,17 @@ public class UserList {
         }
         return -1;
     }
+
+    public User findUserByHostName(String hostName) {
+        for (User user : this.userList) {
+
+            System.out.println("huy: " + user.getHostname()  + user.getHostname().equalsIgnoreCase(hostName));
+
+            if (user.getHostname().equalsIgnoreCase(hostName)) {
+                return user; // Return the first user with a matching hostName
+            }
+        }
+
+        return null; // Return null if no matching user is found
+    }
 }

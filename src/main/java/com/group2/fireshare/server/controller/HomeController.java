@@ -1,6 +1,7 @@
 package com.group2.fireshare.server.controller;
 
 import com.group2.fireshare.server.Server;
+import com.group2.fireshare.server.model.Settings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,26 +21,30 @@ public class HomeController implements Initializable {
     private Parent settingsView;
 
     @FXML
-    private BorderPane mainBorderPane;
+    public BorderPane mainBorderPane;
 
     @FXML
     private void switchManageClientsView(ActionEvent e) {
         mainBorderPane.setCenter(clientView);
+        Settings.getInstance().setCurrentView("manageClientsView");
     }
 
     @FXML
     private void switchManageFilesView(ActionEvent e) {
         mainBorderPane.setCenter(fileView);
+        Settings.getInstance().setCurrentView("manageFilesView");
     }
 
     @FXML
     private void switchConsoleView(ActionEvent e) {
         mainBorderPane.setCenter(consoleView);
+        Settings.getInstance().setCurrentView("consoleView");
     }
 
     @FXML
     private void switchSettingsView(ActionEvent e) {
         mainBorderPane.setCenter(settingsView);
+        Settings.getInstance().setCurrentView("settingsView");
     }
 
 

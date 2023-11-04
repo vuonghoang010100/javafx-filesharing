@@ -41,7 +41,7 @@
             </StackPane>
             <StackPane GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <Button fx:id="pingHost" mnemonicParsing="false" text="Ping" />
+                  <Button fx:id="pingHost" onAction="#pingHost" mnemonicParsing="false" text="Ping" />
                </children>
             </StackPane>
          </children>
