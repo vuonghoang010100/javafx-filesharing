@@ -223,7 +223,23 @@ public class ClientHandler implements Runnable {
         }
 
         Platform.runLater(() -> {
-            Utils.showAlert(Alert.AlertType.INFORMATION , "DISCOVER " + hostName ,  hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + timeReply + " ms.");
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + timeReply + " ms.\n");
+            stringBuilder.append("--------------------\n");
+
+            for (int i = 1 ; i < parts.length - 1 ; i++) {
+                String part = parts[i];
+                String[] arr = part.split("--");
+                String lname = arr[0];
+                String pname = arr[1];
+                stringBuilder.append( "Fname: " + pname + "\nLname: " + lname+ "\n");
+
+                if (i < parts.length - 2) {
+                    stringBuilder.append("--------------------\n");
+                }
+            }
+
+            Utils.showAlert(Alert.AlertType.INFORMATION , "DISCOVER " + hostName ,  stringBuilder.toString());
         });
 
     }

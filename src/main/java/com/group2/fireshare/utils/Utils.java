@@ -18,6 +18,7 @@ public class Utils {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        alert.setResizable(true);
         alert.show();
     }
 

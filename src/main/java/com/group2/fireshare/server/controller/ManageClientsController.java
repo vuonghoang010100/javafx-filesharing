@@ -37,17 +37,18 @@ public class ManageClientsController implements Initializable {
         User selectedUser = clientTable.getSelectionModel().getSelectedItem();
 
         if(selectedUser == null) {
+            Utils.showAlert(Alert.AlertType.WARNING , "DISCOVER" , "Please select the client you want to discover!");
             return;
         }
+
         String hostname = selectedUser.getHostname();
-        String ip = selectedUser.getIp();
-        int port = selectedUser.getPort();
         DataOutputStream dos = selectedUser.getDos();
 
         try {
-            dos.writeUTF("CSFS DISCOVER " + "\""+hostname+"\"");
-        }catch (IOException e) {
-            e.printStackTrace(); // Handle connection or IO errors here
+            NetworkService.getInstance().sendDiscoverPacket(dos, hostname);
+        }catch (CommandProcessingException e) {
+            Utils.showAlert(Alert.AlertType.ERROR , "DISCOVER " + hostname, "DISCOVER error: " + hostname + " is not connecting with server! So we can't discover its local files!");
+            e.printStackTrace();
         }
 
     }
@@ -57,17 +58,18 @@ public class ManageClientsController implements Initializable {
         User selectedUser = clientTable.getSelectionModel().getSelectedItem();
 
         if(selectedUser == null) {
-            Utils.showAlert(Alert.AlertType.WARNING , "PING" , "Plesae select the client you want to ping!");
+            Utils.showAlert(Alert.AlertType.WARNING , "PING" , "Please select the client you want to ping!");
             return;
         }
+
         String hostname = selectedUser.getHostname();
         DataOutputStream dos = selectedUser.getDos();
 
         try {
             NetworkService.getInstance().sendPingPacket(dos, hostname);
         }catch (CommandProcessingException e) {
-            Utils.showAlert(Alert.AlertType.INFORMATION , "PING " + hostname, hostname + " is not connecting with server!");
-            e.printStackTrace(); // Handle connection or IO errors here
+            Utils.showAlert(Alert.AlertType.ERROR , "PING " + hostname, hostname + " is not connecting with server!");
+            e.printStackTrace();
         }
     }
 
