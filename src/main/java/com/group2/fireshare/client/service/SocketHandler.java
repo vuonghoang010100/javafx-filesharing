@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
@@ -66,12 +67,12 @@ public class SocketHandler implements Runnable{
 
         if(requestMatcher.matches()) {
             String method = requestMatcher.group(1).toLowerCase();
-            String data = requestMatcher.group(2);
+            String requestData = requestMatcher.group(2);
 
             if (method.equalsIgnoreCase("discover")) {
-                processDiscoverPacket(data);
+                processDiscoverPacket(requestData);
             } else if (method.equalsIgnoreCase("ping")) {
-                processPingPacket(data);
+                processPingPacket(requestData);
             } else {
                // TODO Process bad request
             }
@@ -196,16 +197,29 @@ public class SocketHandler implements Runnable{
 
     }
 
-    public  void processDiscoverPacket(String hostName)  {
-        List<FileItem> files = Repository.getInstance().getFileList();
+    public  void processDiscoverPacket(String requestData)  {
+        // Update comments...
+        String[] parts =  requestData.split("\\|\\|");
+        String hostname = parts[0];
 
+        long timeStart = Long.parseLong(parts[1]);
+        long timeMilisec = Calendar.getInstance().getTimeInMillis();
+
+        List<FileItem> files = Repository.getInstance().getFileList();
         try {
             if(files.isEmpty()) {
-                this.dos.writeUTF("CSFS 205 EMPTY");
+                this.dos.writeUTF("CSFS 205 EMPTY " + "\"" + hostname + "||" + (timeMilisec - timeStart) +"\"");
                 return;
             }
 
-            this.dos.writeUTF("CSFS 204 CONTAIN");
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.append(hostname);
+            strBuilder.append("||");
+            for (FileItem file : files) {
+                strBuilder.append(file.getLname() + "--" + file.getPname());
+                strBuilder.append("||");
+            }
+            this.dos.writeUTF("CSFS 204 CONTAIN " + "\"" + strBuilder +(timeMilisec - timeStart) +"\"");
 
         }catch (IOException e) {
             System.out.println("Send response for DISCOVER request failed " + e);
@@ -221,9 +235,6 @@ public class SocketHandler implements Runnable{
         // Update comments...
         try {
             String[] parts =  requestData.split("\\|\\|");
-
-            System.out.println("huy: " + parts[0] +   "   " + parts[1]+  "  " + requestData);
-
             String hostname = parts[0];
             long timeStart = Long.parseLong(parts[1]);
 

@@ -79,15 +79,14 @@ public class ConsoleController implements Initializable {
     private void processDiscoverCommand(String hostName) throws CommandProcessingException {
         User user = UserList.getInstance().findUserByHostName(hostName);
 
-
         if (user == null) {
-            throw new CommandProcessingException("Host " + hostName + " is not connecting with server! (OFFLINE)");
+            throw new CommandProcessingException("DISCOVER error: " + hostName + " is not connecting with server! So we can't discover its local files!");
         }
 
         DataOutputStream dos = user.getDos();
         try {
-            dos.writeUTF("CSFS DISCOVER " + "\""+hostName+"\"");
-        } catch (IOException e) {
+            NetworkService.getInstance().sendDiscoverPacket(dos, hostName);
+        } catch (CommandProcessingException e) {
             throw new CommandProcessingException(e.getMessage());
         }
     }

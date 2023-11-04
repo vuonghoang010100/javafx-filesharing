@@ -123,9 +123,9 @@ public class ClientHandler implements Runnable {
             // Update comments..
 
             if (statusCode.equals("204")) {
-                System.out.println(responseData);
+                processStatusCode204(responseData);
             } else if (statusCode.equals("205")) {
-                System.out.println("huy empty server");
+                processStatusCode205(responseData);
             } else if (statusCode.equals("200")) {
                 processStatusCode200(responseData);
             }
@@ -197,8 +197,56 @@ public class ClientHandler implements Runnable {
 
     }
 
-    public void processDiscoverPacket(String hostName) throws IOException {}
+    public void processStatusCode204(String responseData) {
+        boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 
+        // Update comments...
+        String[] parts = responseData.split("\\|\\|");
+        String hostName = parts[0];
+        String timeReply = parts[parts.length - 1];
+
+        int filesCount = parts.length - 2;
+        String fileOrFiles = (filesCount == 1) ? "file" : "files";
+
+
+        // Update comments...
+        if (isConsoleViewVisible) {
+            ServerConsole.getInstance().addText(hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + timeReply + " ms.");
+            for (int i = 1 ; i < parts.length - 1 ; i++) {
+                String part = parts[i];
+                String[] arr = part.split("--");
+                String lname = arr[0];
+                String pname = arr[1];
+                ServerConsole.getInstance().addText(i + ") " + "Fname: " + pname + "  |  Lname: " + lname);
+            }
+            return;
+        }
+
+        Platform.runLater(() -> {
+            Utils.showAlert(Alert.AlertType.INFORMATION , "DISCOVER " + hostName ,  hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + timeReply + " ms.");
+        });
+
+    }
+
+    public void processStatusCode205(String responseData) {
+        boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
+
+        // Update comments...
+        String[] parts = responseData.split("\\|\\|");
+        String hostName = parts[0];
+        String timeReply = parts[1];
+
+        // Update comments...
+        if (isConsoleViewVisible) {
+            ServerConsole.getInstance().addText(hostName +" contains 0 local file! Reply in " + timeReply +" ms.");
+            return;
+        }
+
+        Platform.runLater(() -> {
+            Utils.showAlert(Alert.AlertType.INFORMATION , "DISCOVER " + hostName ,  hostName +" contains 0 local file! Reply in " + timeReply +" ms.");
+        });
+
+    }
     public void processStatusCode200(String responseData) throws IOException {
         boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 

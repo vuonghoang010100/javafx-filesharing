@@ -26,4 +26,13 @@ public class NetworkService {
         }
     }
 
+    public void sendDiscoverPacket(DataOutputStream dos, String hostName) throws CommandProcessingException {
+        long timeMilisec = Calendar.getInstance().getTimeInMillis();
+        try {
+            dos.writeUTF("CSFS DISCOVER " + "\""+hostName + "||"+ timeMilisec+"\"");
+        } catch (IOException e) {
+            throw new CommandProcessingException(e.getMessage());
+        }
+    }
+
 }

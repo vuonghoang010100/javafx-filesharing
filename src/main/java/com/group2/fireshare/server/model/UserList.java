@@ -63,9 +63,6 @@ public class UserList {
 
     public User findUserByHostName(String hostName) {
         for (User user : this.userList) {
-
-            System.out.println("huy: " + user.getHostname()  + user.getHostname().equalsIgnoreCase(hostName));
-
             if (user.getHostname().equalsIgnoreCase(hostName)) {
                 return user; // Return the first user with a matching hostName
             }
