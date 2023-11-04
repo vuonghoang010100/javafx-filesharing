@@ -113,7 +113,9 @@ public class ClientHandler implements Runnable {
         // We have 4 types of response packet that server is able to receive for now.
         // Those are "204 CONTAIN" "205 EMPTY" "200 PING_OK" "400 BAD_REQUEST"
 
-        // Format "204 CONTAIN": CSFS 204 CONTAIN "LAPTOP-42KF98B0||config.txt--C:\\User\\Admin\\config.txt||40"
+        // Format "204 CONTAIN": CSFS 204 CONTAIN "${hostname}||${lname}--${pname}||${duration}"
+        // ${lname}--${pname}, this part can be repeated multiple times.
+
         // Format "205 EMPTY": CSFS 205 EMPTY "${hostname}||${durationTime}"
         // Format "200 PING_OK": CSFS 200 PING_OK "${hostname}||${durationTime}"
         // Format "400 BAD_REQUEST": CSFS 400 BAD_REQUEST ""
@@ -205,16 +207,19 @@ public class ClientHandler implements Runnable {
     public void processStatusCode204(String responseData) {
         boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 
-        // Update comments...
+        // E.g. CSFS 204 CONTAIN "LAPTOP-42KF98B0||config.txt--C:\\User\\Admin\\config.txt||40"
+        // We parse the text to get the hostname, the lists of local file and the duration time in the last.
+
         String[] parts = responseData.split("\\|\\|");
         String hostName = parts[0];
         String timeReply = parts[parts.length - 1];
 
+        // Count the number of files, divide two because
+        // the first is the hostname and the last are the duration time.
         int filesCount = parts.length - 2;
         String fileOrFiles = (filesCount == 1) ? "file" : "files";
 
-
-        // Update comments...
+        // Users is working on ConsoleView so we add the text to it.
         if (isConsoleViewVisible) {
             ServerConsole.getInstance().addText(hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + timeReply + " ms.");
             for (int i = 1 ; i < parts.length - 1 ; i++) {
@@ -224,6 +229,7 @@ public class ClientHandler implements Runnable {
                 String pname = arr[1];
                 ServerConsole.getInstance().addText(i + ") " + "Fname: " + pname + "  |  Lname: " + lname);
             }
+            ServerConsole.getInstance().addText("-------------------------");
             return;
         }
 
@@ -252,14 +258,17 @@ public class ClientHandler implements Runnable {
     public void processStatusCode205(String responseData) {
         boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 
-        // Update comments...
+        // E.g. CSFS 205 EMPTY "LATOP--42KF98B0||40"
+        // We parse the text to get the hostname and the duration time.
+
         String[] parts = responseData.split("\\|\\|");
         String hostName = parts[0];
         String timeReply = parts[1];
 
-        // Update comments...
+        // Users is working on ConsoleView so we add the text to it.
         if (isConsoleViewVisible) {
             ServerConsole.getInstance().addText(hostName +" contains 0 local file! Reply in " + timeReply +" ms.");
+            ServerConsole.getInstance().addText("-------------------------");
             return;
         }
 
@@ -271,14 +280,17 @@ public class ClientHandler implements Runnable {
     public void processStatusCode200(String responseData) throws IOException {
         boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 
-        // Update comments...
+        // E.g. CSFS 205 PING_OK "LATOP--42KF98B0||40"
+        // We parse the text to get the hostname and the duration time.
+
         String[] parts = responseData.split("\\|\\|");
         String hostName = parts[0];
         String timeReply = parts[1];
 
-        // Update comments...
+        // Users is working on ConsoleView so we add the text to it.
         if (isConsoleViewVisible) {
             ServerConsole.getInstance().addText(hostName +" is connecting with the server! Reply in " + timeReply +" ms.");
+            ServerConsole.getInstance().addText("-------------------------");
             return;
         }
 
@@ -288,8 +300,10 @@ public class ClientHandler implements Runnable {
     }
 
     public void processStatusCode400() {
+        // This response packet doesn't contain body
         boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 
+        // Users is working on ConsoleView so we add the text to it.
         if (isConsoleViewVisible) {
             ServerConsole.getInstance().addText("Bad request, please check the format.\n");
             return;

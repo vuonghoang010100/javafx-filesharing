@@ -38,6 +38,7 @@ public class ConsoleController implements Initializable {
             processCommand(input);
         } catch (CommandProcessingException e) {
             ServerConsole.getInstance().addText(e.getMessage());
+            ServerConsole.getInstance().addText("-------------------------");
         }
     }
 
@@ -48,7 +49,7 @@ public class ConsoleController implements Initializable {
         // The command doesn't match the regex, it means this is a invalid command.
         // Throw the friendly error message to educate the user how to write valid commands.
         if (!matcherRequest.matches()) {
-            throw new CommandProcessingException("Command invalid! Please follow these example commands:\nCSFS PING \"LAPTOP-42KF98B\" \nCSFS DISCOVER \"LAPTOP-42KF98B\"");
+            throw new CommandProcessingException("Command invalid! Please follow these example commands:\nCSFS PING \"${client_host_name}\" \nCSFS DISCOVER \"${client_host_name}\"");
         }
 
         // The command is valid so we parse it to get the method and the request data.
@@ -62,7 +63,7 @@ public class ConsoleController implements Initializable {
             processDiscoverCommand(data);
         } else {
             // Method is not supported, so we throw the friendly error message to educate the user.
-            throw new CommandProcessingException("Command invalid! Please follow these example commands:\nCSFS PING \"LAPTOP-42KF98B\" \nCSFS DISCOVER \"LAPTOP-42KF98B\"");
+            throw new CommandProcessingException("Your method is not supported! Please follow these example commands:\nCSFS PING \"${client_host_name}\" \nCSFS DISCOVER \"${client_host_name}\"");
         }
     }
 
