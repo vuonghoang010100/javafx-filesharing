@@ -9,6 +9,7 @@ public class Settings {
 
     private Settings() {
         // Private constructor to enforce singleton pattern
+        this.currentView = "manageClientsView";
     }
 
     public static Settings getInstance() {

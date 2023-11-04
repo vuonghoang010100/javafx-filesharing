@@ -1,8 +1,10 @@
 package com.group2.fireshare.server.controller;
 
 import com.group2.fireshare.server.Server;
+import com.group2.fireshare.server.model.CommandProcessingException;
 import com.group2.fireshare.server.model.User;
 import com.group2.fireshare.server.model.UserList;
+import com.group2.fireshare.server.service.NetworkService;
 import com.group2.fireshare.utils.Utils;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.ResourceBundle;
 
 public class ManageClientsController implements Initializable {
@@ -54,16 +57,15 @@ public class ManageClientsController implements Initializable {
         User selectedUser = clientTable.getSelectionModel().getSelectedItem();
 
         if(selectedUser == null) {
+            Utils.showAlert(Alert.AlertType.WARNING , "PING" , "Plesae select the client you want to ping!");
             return;
         }
         String hostname = selectedUser.getHostname();
-        String ip = selectedUser.getIp();
-        int port = selectedUser.getPort();
         DataOutputStream dos = selectedUser.getDos();
 
         try {
-            dos.writeUTF("CSFS PING " + "\""+hostname+"\"");
-        }catch (IOException e) {
+            NetworkService.getInstance().sendPingPacket(dos, hostname);
+        }catch (CommandProcessingException e) {
             Utils.showAlert(Alert.AlertType.INFORMATION , "PING " + hostname, hostname + " is not connecting with server!");
             e.printStackTrace(); // Handle connection or IO errors here
         }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -216,9 +217,18 @@ public class SocketHandler implements Runnable{
 
     }
 
-    public void processPingPacket(String hostname) {
+    public void processPingPacket(String requestData) {
+        // Update comments...
         try {
-            this.dos.writeUTF("CSFS 200 PING_OK " + "\"" + hostname +"\"");
+            String[] parts =  requestData.split("\\|\\|");
+
+            System.out.println("huy: " + parts[0] +   "   " + parts[1]+  "  " + requestData);
+
+            String hostname = parts[0];
+            long timeStart = Long.parseLong(parts[1]);
+
+            long timeMilisec = Calendar.getInstance().getTimeInMillis();
+            this.dos.writeUTF("CSFS 200 PING_OK " + "\"" +hostname +"||"+ (timeMilisec - timeStart) +"\"");
         }catch (IOException e) {
             System.out.println("Send response for DISCOVER request failed " + e);
         }

@@ -199,28 +199,22 @@ public class ClientHandler implements Runnable {
 
     public void processDiscoverPacket(String hostName) throws IOException {}
 
-    public void processPingPacket(String hostName) throws IOException {
-        User user = UserList.getInstance().findUserByHostName(hostName);
-
-        if (user == null) {
-            return;
-        }
-
-        DataOutputStream dos = user.getDos();
-        dos.writeUTF("CSFS PING " + user.getHostname());
-    }
-
-    public void processStatusCode200(String hostName) throws IOException {
+    public void processStatusCode200(String responseData) throws IOException {
         boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 
         // Update comments...
+        String[] parts = responseData.split("\\|\\|");
+        String hostName = parts[0];
+        String timeReply = parts[1];
+
+        // Update comments...
         if (isConsoleViewVisible) {
-            ServerConsole.getInstance().addText(hostName +" is connecting with the server! (ONLINE)");
+            ServerConsole.getInstance().addText(hostName +" is connecting with the server! Reply in " + timeReply +" ms.");
             return;
         }
 
         Platform.runLater(() -> {
-            Utils.showAlert(Alert.AlertType.INFORMATION , "Ping " + hostName ,  hostName +" is connecting with server! (ONLINE)");
+            Utils.showAlert(Alert.AlertType.INFORMATION , "Ping " + hostName ,  hostName +" is connecting with server! Reply in " + timeReply +" ms.");
         });
     }
 
