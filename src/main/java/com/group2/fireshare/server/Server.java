@@ -1,12 +1,18 @@
 package com.group2.fireshare.server;
 
 import com.group2.fireshare.server.service.ServerHandler;
+import com.group2.fireshare.utils.Utils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.time.LocalDateTime;
 
 public class Server extends Application {
     private static Server instance;
@@ -42,6 +48,13 @@ public class Server extends Application {
             e.printStackTrace();
         }
     }
+
+    public void writeOutputLog(String content) {
+        String log = "[" + LocalDateTime.now().format(Utils.getTimeFormatter())
+                + "] Send request to server: " + content;
+        System.out.println(log);
+    }
+
 
     public Server() {
         instance = this;

@@ -17,6 +17,8 @@ public class HomeController implements Initializable {
     private Parent fileView;
     private Parent consoleView;
 
+    private Parent settingsView;
+
     @FXML
     private BorderPane mainBorderPane;
 
@@ -35,6 +37,11 @@ public class HomeController implements Initializable {
         mainBorderPane.setCenter(consoleView);
     }
 
+    @FXML
+    private void switchSettingsView(ActionEvent e) {
+        mainBorderPane.setCenter(settingsView);
+    }
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -47,6 +54,9 @@ public class HomeController implements Initializable {
 
             FXMLLoader loader3 = new FXMLLoader(Server.getInstance().getClass().getResource("fxml/console.fxml"));
             consoleView = (Parent) (loader3.load());
+
+            FXMLLoader loader4 = new FXMLLoader(Server.getInstance().getClass().getResource("fxml/settings.fxml"));
+            settingsView = (Parent) (loader4.load());
         }
         catch (IOException e) {
             e.printStackTrace();

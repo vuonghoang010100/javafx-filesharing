@@ -105,9 +105,9 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Test in my case
-        ip.setText("192.168.1.211");
+        ip.setText("192.168.56.1");
         port.setText("8080");
         listenPort.setText("5000");
-        repoFolder.setText("D:\\a_repo");
+        repoFolder.setText("C:\\Users\\Admin\\Downloads\\huy2");
     }
 }

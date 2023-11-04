@@ -32,6 +32,10 @@ public class FileItem {
         this.pname = pname;
     }
 
+
+    public String getPnameAndLname() {
+        return this.pname + "-" + this.lname;
+    }
     public boolean isCreatedByConsole() {
         return isCreatedByConsole;
     }

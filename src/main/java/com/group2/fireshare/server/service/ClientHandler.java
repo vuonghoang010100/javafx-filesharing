@@ -1,5 +1,6 @@
 package com.group2.fireshare.server.service;
 
+
 import com.group2.fireshare.server.model.*;
 import com.group2.fireshare.utils.Utils;
 import javafx.application.Platform;
@@ -11,8 +12,12 @@ import java.io.IOException;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+
 
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
@@ -23,6 +28,7 @@ public class ClientHandler implements Runnable {
         this.clientSocket = clientSocket;
         this.dis = dis;
         this.dos = dos;
+
         // add user: hostname:port
         addUser(new User(
                 clientSocket.getInetAddress().getHostName(),
@@ -40,6 +46,7 @@ public class ClientHandler implements Runnable {
             try {
                 // wait for input packet
                 csfsPacket = dis.readUTF();
+
                 // log
                 writeLogOnInput(csfsPacket);
                 // process packet
@@ -86,11 +93,11 @@ public class ClientHandler implements Runnable {
             // This csfsPacket is a request
             String method = matcherRequest.group(1).toLowerCase();
             String data = matcherRequest.group(2);
-            if (method.equals("listen_port")) {
+            if (method.equalsIgnoreCase("listen_port")) {
                 processListenPortPacket(data);
-            } else if (method.equals("publish")) {
+            } else if (method.equalsIgnoreCase("publish")) {
                 processPublishPacket(data);
-            } else if (method.equals("fetch")) {
+            } else if (method.equalsIgnoreCase("fetch")) {
                 processFetchPacket(data);
             } else {
                 responseBadRequest();
@@ -98,7 +105,29 @@ public class ClientHandler implements Runnable {
             return;
         }
 
-        // TODO process response packet
+
+        // Process response packet
+        // Ex:
+        //      CSFS 204 "CONTAIN"
+        //      CSFS 205 "EMPTY"
+        Pattern responsePattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+(\\d+)\\s+([a-zA-Z_]+)(?:\\s+\\\"(.+)\\\")?$");
+        Matcher responseMatcher = responsePattern.matcher(csfsPacket);
+        if (responseMatcher.matches()) {
+            String statusCode = responseMatcher.group(1).toLowerCase();
+            String statusMessage = responseMatcher.group(2);
+            String responseData = responseMatcher.group(3);
+
+            // Update comments..
+
+            if (statusCode.equals("204")) {
+                System.out.println(responseData);
+            } else if (statusCode.equals("205")) {
+                System.out.println("huy empty server");
+            }
+
+            return;
+
+        }
 
         responseBadRequest();
     }

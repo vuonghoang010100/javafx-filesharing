@@ -1,14 +1,21 @@
 package com.group2.fireshare.server.controller;
 
+import com.group2.fireshare.server.Server;
 import com.group2.fireshare.server.model.User;
 import com.group2.fireshare.server.model.UserList;
+import com.group2.fireshare.utils.Utils;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,6 +31,21 @@ public class ManageClientsController implements Initializable {
 
     @FXML
     protected void discoverHost() {
+        User selectedUser = clientTable.getSelectionModel().getSelectedItem();
+
+        if(selectedUser == null) {
+            return;
+        }
+        String hostname = selectedUser.getHostname();
+        String ip = selectedUser.getIp();
+        int port = selectedUser.getPort();
+        DataOutputStream dos = selectedUser.getDos();
+
+        try {
+            dos.writeUTF("CSFS DISCOVER " + "\""+hostname+"\"");
+        }catch (IOException e) {
+            e.printStackTrace(); // Handle connection or IO errors here
+        }
 
     }
 

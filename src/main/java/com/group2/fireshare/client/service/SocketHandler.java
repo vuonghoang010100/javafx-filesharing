@@ -1,10 +1,7 @@
 package com.group2.fireshare.client.service;
 
 import com.group2.fireshare.client.Client;
-import com.group2.fireshare.client.model.ClientConsole;
-import com.group2.fireshare.client.model.FetchItem;
-import com.group2.fireshare.client.model.FetchList;
-import com.group2.fireshare.client.model.Repository;
+import com.group2.fireshare.client.model.*;
 import com.group2.fireshare.utils.Utils;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -59,8 +56,23 @@ public class SocketHandler implements Runnable{
 
         // TODO Process request packet
         // Ex:
-        //      CSFS PING "1698969514368"
-        //      CSFS DISCOVER
+        //      CSFS PING "LAPTOP-42KF98B0"
+        //      CSFS DISCOVER "LAPTOP-42KF98B0"
+
+        // Update comments...
+        Pattern requestPattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+(DISCOVER|PING)\\s+\"([^\"]+)\"$");
+        Matcher requestMatcher = requestPattern.matcher(csfsPacket);
+
+        if(requestMatcher.matches()) {
+            String method = requestMatcher.group(1).toLowerCase();
+            String data = requestMatcher.group(2);
+            if (method.equalsIgnoreCase("discover")) {
+                processDiscoverPacket(data);
+            }
+
+            return;
+        }
+
 
         // process response packet
         // Ex:
@@ -70,6 +82,7 @@ public class SocketHandler implements Runnable{
         //      CSFS 203 FILE_NOT_FOUND “a.txt”
         Pattern responsePattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+(\\d+)\\s+([a-zA-Z_]+)(?:\\s+\\\"(.+)\\\")?$");
         Matcher responseMatcher = responsePattern.matcher(csfsPacket);
+
         if (responseMatcher.matches()) {
             // This is a response packet
             int code = Integer.parseInt(responseMatcher.group(1));
@@ -86,6 +99,11 @@ public class SocketHandler implements Runnable{
             }
             // pass code 206
         }
+
+
+
+
+
         // Bad request here
     }
 
@@ -169,6 +187,27 @@ public class SocketHandler implements Runnable{
                 processCancelFetching(filename, "Cancel! Lost connect to Sender!");
             }
         });
+
+    }
+
+    public  void processDiscoverPacket(String hostName)  {
+        List<FileItem> files = Repository.getInstance().getFileList();
+
+        try {
+            if(files.isEmpty()) {
+                this.dos.writeUTF("CSFS 205 EMPTY");
+                return;
+            }
+
+            this.dos.writeUTF("CSFS 204 CONTAIN");
+
+        }catch (IOException e) {
+            System.out.println("Send response for DISCOVER request failed " + e);
+        }
+        // Update comments...
+
+
+
 
     }
 

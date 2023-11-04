@@ -1,6 +1,7 @@
 package com.group2.fireshare.server.controller;
 
 
+import com.group2.fireshare.server.model.Settings;
 import com.group2.fireshare.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,6 +29,10 @@ public class StartServerController implements Initializable {
             return;
         }
         int portNo = Integer.parseInt(port.getText());
+
+        // Set the IP in IPManager
+        Settings.getInstance().setServerIP(ip.getText());
+        Settings.getInstance().setServerPort(Integer.parseInt(port.getText()));
 
         // Start server
         Server.getInstance().startServer(portNo);
