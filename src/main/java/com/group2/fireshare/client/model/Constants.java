@@ -4,8 +4,8 @@ public class Constants {
     public static final String USER_CONFIGURATION_FILE_NAME="configs.txt";
     public static final String USER_REPO_PATH="USER_REPO_PATH";
     public static final String USER_PORT="USER_PORT";
-    public static final String SERVER_IP="SERVER_IP";
-    public static final String SERVER_PORT="SERVER_PORT";
+    public static final String SERVER_IP="USER_SERVER_IP";
+    public static final String SERVER_PORT="USER_SERVER_PORT";
 
 
     private Constants() {
