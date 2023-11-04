@@ -56,12 +56,16 @@ public class SocketHandler implements Runnable{
         // log
         writeLogOnInput(csfsPacket);
 
-        // TODO Process request packet
-        // Ex:
-        //      CSFS PING "LAPTOP-42KF98B0"
-        //      CSFS DISCOVER "LAPTOP-42KF98B0"
+        // Explain PING packet:
+        // PING packet format: CSFS PING "${hostName}||${timeStart}"
+        // E.g. CSFS PING "LAPTOP-42KF98B0||1698969514368"
+        // We need a time ping to calculate how long since the server receive a reply
 
-        // Update comments...
+        // Explain DISCOVER packet:
+        // DISCOVER packet format: CSFS DISCOVER "${hostName}||${timeStart}"
+        // E.g. CSFS DISCOVER "LAPTOP-42KF98B0||1698969514368"
+        // We need a timeStart to calculate how long since the server receives a reply
+
         Pattern requestPattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+(DISCOVER|PING)\\s+\"([^\"]+)\"$");
         Matcher requestMatcher = requestPattern.matcher(csfsPacket);
 
@@ -74,7 +78,7 @@ public class SocketHandler implements Runnable{
             } else if (method.equalsIgnoreCase("ping")) {
                 processPingPacket(requestData);
             } else {
-               // TODO Process bad request
+                processInvalidPacket();
             }
 
             return;
@@ -198,7 +202,9 @@ public class SocketHandler implements Runnable{
     }
 
     public  void processDiscoverPacket(String requestData)  {
-        // Update comments...
+        // E.g. CSFS DISCOVER "LAPTOP-42KF98B0||1698969514368"
+
+        // Split the data to get the hostname and the timeStart
         String[] parts =  requestData.split("\\|\\|");
         String hostname = parts[0];
 
@@ -207,32 +213,36 @@ public class SocketHandler implements Runnable{
 
         List<FileItem> files = Repository.getInstance().getFileList();
         try {
+
+            // Files is empty so we return 205 EMPTY with the hostname and the duration time.
             if(files.isEmpty()) {
                 this.dos.writeUTF("CSFS 205 EMPTY " + "\"" + hostname + "||" + (timeMilisec - timeStart) +"\"");
                 return;
             }
 
+
+            // Files is not empty so we return 204 CONTAIN, the hostname,a list of local files and the ducation time.
+            // Format: CSFS 204 CONTAIN "${hostname}||${strBuilder}||${duration}"
+            // E.g. CSFS 204 CONTAIN "LAPTOP-42KF98B0||config.txt--C:\\User\\Admin\\config.txt||40"
+
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.append(hostname);
             strBuilder.append("||");
+
             for (FileItem file : files) {
                 strBuilder.append(file.getLname() + "--" + file.getPname());
                 strBuilder.append("||");
             }
-            this.dos.writeUTF("CSFS 204 CONTAIN " + "\"" + strBuilder +(timeMilisec - timeStart) +"\"");
 
+            this.dos.writeUTF("CSFS 204 CONTAIN " + "\"" + strBuilder +(timeMilisec - timeStart) +"\"");
         }catch (IOException e) {
             System.out.println("Send response for DISCOVER request failed " + e);
         }
-        // Update comments...
-
-
-
-
     }
 
     public void processPingPacket(String requestData) {
-        // Update comments...
+        // E.g. CSFS PING "LAPTOP-42KF98B0||1698969514368"
+        // Split the data to get the hostname and the timeStart
         try {
             String[] parts =  requestData.split("\\|\\|");
             String hostname = parts[0];
@@ -241,7 +251,15 @@ public class SocketHandler implements Runnable{
             long timeMilisec = Calendar.getInstance().getTimeInMillis();
             this.dos.writeUTF("CSFS 200 PING_OK " + "\"" +hostname +"||"+ (timeMilisec - timeStart) +"\"");
         }catch (IOException e) {
-            System.out.println("Send response for DISCOVER request failed " + e);
+            System.out.println("Send response for PING request failed " + e);
+        }
+    }
+
+    public void processInvalidPacket() {
+        try {
+            this.dos.writeUTF("CSFS 400 BAD_REQUEST");
+        }catch (IOException e) {
+            System.out.println("Send response for invalid request failed " + e);
         }
     }
 

@@ -119,7 +119,7 @@ public class LoginController implements Initializable {
         String serverIP = properties.getProperty(Constants.SERVER_IP , "192.168.56.1");
         String serverPort = properties.getProperty(Constants.SERVER_PORT , "8080");
         String userPort = properties.getProperty(Constants.USER_PORT , "5000");
-        String userRepoPath = properties.getProperty(Constants.USER_REPO_PATH , "C:\\Users\\Admin\\Downloads\\huy2");
+        String userRepoPath = properties.getProperty(Constants.USER_REPO_PATH , "C:\\Users\\Admin\\Downloads");
 
         // Test in my case
         ip.setText(serverIP);

@@ -110,9 +110,14 @@ public class ClientHandler implements Runnable {
 
 
         // Process response packet
-        // Ex:
-        //      CSFS 204 "CONTAIN"
-        //      CSFS 205 "EMPTY"
+        // We have 4 types of response packet that server is able to receive for now.
+        // Those are "204 CONTAIN" "205 EMPTY" "200 PING_OK" "400 BAD_REQUEST"
+
+        // Format "204 CONTAIN": CSFS 204 CONTAIN "LAPTOP-42KF98B0||config.txt--C:\\User\\Admin\\config.txt||40"
+        // Format "205 EMPTY": CSFS 205 EMPTY "${hostname}||${durationTime}"
+        // Format "200 PING_OK": CSFS 200 PING_OK "${hostname}||${durationTime}"
+        // Format "400 BAD_REQUEST": CSFS 400 BAD_REQUEST ""
+
         Pattern responsePattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+(\\d+)\\s+([a-zA-Z_]+)(?:\\s+\\\"(.+)\\\")?$");
         Matcher responseMatcher = responsePattern.matcher(csfsPacket);
         if (responseMatcher.matches()) {
@@ -120,16 +125,16 @@ public class ClientHandler implements Runnable {
             String statusMessage = responseMatcher.group(2);
             String responseData = responseMatcher.group(3);
 
-            // Update comments..
-
+            // We need to care about the status code, status message is not too important for now.
             if (statusCode.equals("204")) {
                 processStatusCode204(responseData);
             } else if (statusCode.equals("205")) {
                 processStatusCode205(responseData);
             } else if (statusCode.equals("200")) {
                 processStatusCode200(responseData);
+            } else if (statusCode.equals("400")) {
+                processStatusCode400();
             }
-
             return;
 
         }
@@ -279,6 +284,19 @@ public class ClientHandler implements Runnable {
 
         Platform.runLater(() -> {
             Utils.showAlert(Alert.AlertType.INFORMATION , "Ping " + hostName ,  hostName +" is connecting with server! Reply in " + timeReply +" ms.");
+        });
+    }
+
+    public void processStatusCode400() {
+        boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
+
+        if (isConsoleViewVisible) {
+            ServerConsole.getInstance().addText("Bad request, please check the format.\n");
+            return;
+        }
+
+        Platform.runLater(() -> {
+            Utils.showAlert(Alert.AlertType.ERROR , "Bad Request"  ,  "Bad request, please check the format.");
         });
     }
 
