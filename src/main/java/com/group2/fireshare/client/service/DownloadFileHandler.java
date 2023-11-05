@@ -2,10 +2,10 @@ package com.group2.fireshare.client.service;
 
 
 import com.group2.fireshare.client.Client;
-import com.group2.fireshare.client.model.ClientConsole;
-import com.group2.fireshare.client.model.FetchItem;
-import com.group2.fireshare.client.model.FetchList;
+import com.group2.fireshare.client.model.*;
+import com.group2.fireshare.utils.Utils;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import java.io.*;
 import java.net.Socket;
@@ -82,7 +82,7 @@ public class DownloadFileHandler implements Runnable{
             // test
             System.out.println("File size: " + size);
 
-            String downloadFile = Client.getInstance().getRepoDir().getPath() + "/" + filename;
+            String downloadFile = Client.getInstance().getRepoDir().getPath() + File.separator + filename;
             FileOutputStream fileOutputStream = new FileOutputStream(downloadFile, false);
 
             while (size > 0 &&
@@ -106,6 +106,9 @@ public class DownloadFileHandler implements Runnable{
             status = "Download "+ filename +" completed!";
             setStatusOnFetchItem(status);
 
+            // Publish
+            publishOnDownloadComplete(downloadFile, filename);
+
         } catch (IOException e) {
             String status = "Cancel! Lost connection to sender host [" + srcIp + ":" + srcPort + "]!";
             setStatusOnFetchItem(status);
@@ -113,6 +116,22 @@ public class DownloadFileHandler implements Runnable{
         }
 
 
+    }
+
+    public void publishOnDownloadComplete(String lname, String fname) {
+        Repository.getInstance().addFile(new FileItem(lname, fname, useConsole));
+        try {
+            Client.getInstance().sendPublishPacket(fname);
+            if (useConsole) {
+                ClientConsole.getInstance().addText("Publish packet has been sent to server");
+            }
+        } catch (IOException e) {
+            if (useConsole) {
+                ClientConsole.getInstance().addText("Failed to send publish packet to server");
+            } else {
+                Utils.showAlert(Alert.AlertType.ERROR, "Publish Error!", "Failed to send publish packet to server!");
+            }
+        }
     }
 
     public void setStatusOnFetchItem(String status) {
