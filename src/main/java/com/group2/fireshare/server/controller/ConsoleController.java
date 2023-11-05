@@ -43,13 +43,17 @@ public class ConsoleController implements Initializable {
     }
 
     private void processCommand(String input) throws CommandProcessingException {
+        if (!input.trim().startsWith("CSFS ")) {
+            input = "CSFS " + input;
+        }
+
         Pattern requestPattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+([a-zA-Z_]+)\\s+\\\"(.+)\\\"$");
         Matcher matcherRequest = requestPattern.matcher(input);
 
         // The command doesn't match the regex, it means this is a invalid command.
         // Throw the friendly error message to educate the user how to write valid commands.
         if (!matcherRequest.matches()) {
-            throw new CommandProcessingException("Command invalid! Please follow these example commands:\nCSFS PING \"${client_host_name}\" \nCSFS DISCOVER \"${client_host_name}\"");
+            throw new CommandProcessingException("Command invalid! Please follow these example commands:\nPING \"${client_host_name}\" \nDISCOVER \"${client_host_name}\"");
         }
 
         // The command is valid so we parse it to get the method and the request data.
@@ -63,7 +67,7 @@ public class ConsoleController implements Initializable {
             processDiscoverCommand(data);
         } else {
             // Method is not supported, so we throw the friendly error message to educate the user.
-            throw new CommandProcessingException("Your method is not supported! Please follow these example commands:\nCSFS PING \"${client_host_name}\" \nCSFS DISCOVER \"${client_host_name}\"");
+            throw new CommandProcessingException("Your method is not supported! Please follow these example commands:\nPING \"${client_host_name}\" \nDISCOVER \"${client_host_name}\"");
         }
     }
 

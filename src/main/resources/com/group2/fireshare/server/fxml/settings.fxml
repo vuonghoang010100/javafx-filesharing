@@ -5,18 +5,20 @@
 
 <?import javafx.geometry.Insets?>
 <AnchorPane prefHeight="600.0" prefWidth="620.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.group2.fireshare.server.controller.SettingsController">
+    <!-- Other elements that you may have here, e.g., background, etc. -->
+
     <VBox alignment="CENTER" spacing="20" prefHeight="600.0" prefWidth="620.0">
-        <Label fx:id="hostLabel">
+        <Label fx:id="hostLabel" pickOnBounds="true">
             <text>
-                <Font name="Arial" size="24" />
+                <Font name="Arial" size="36" /> <!-- Adjust font size as needed -->
             </text>
             <padding>
                 <Insets left="20" />
             </padding>
         </Label>
-        <Label fx:id="portLabel">
+        <Label fx:id="portLabel" pickOnBounds="true">
             <text>
-                <Font name="Arial" size="24" />
+                <Font name="Arial" size="36" /> <!-- Adjust font size as needed -->
             </text>
             <padding>
                 <Insets left="20" />
