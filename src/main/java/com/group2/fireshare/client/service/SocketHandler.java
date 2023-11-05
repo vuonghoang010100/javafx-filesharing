@@ -108,14 +108,8 @@ public class SocketHandler implements Runnable{
                 }
                 processCancelFetching(responseMatcher.group(3), "Cancel! File not found in the network!");
             }
-            // pass code 206
+            // pass code 206 400
         }
-
-
-
-
-
-        // Bad request here
     }
 
     public void processPublishResponse(String filename) {
@@ -133,71 +127,31 @@ public class SocketHandler implements Runnable{
         int port = Integer.parseInt(param[2]);
 
         FetchItem item = FetchList.getInstance().getFetchItemFetching(filename);
-        if ( item != null && item.isCreatedByConsole()) {
-            ClientConsole.getInstance().addText("Received publish response, file: " + filename + " has been found in host ip=" + ip + ",port=" + port);
-            ClientConsole.getInstance().addText("Send request file: " + filename + " to ip: " + ip + " port: " + port);
+        if (item == null) {
+            // client didn't request this file
+            return;
         }
 
-        Platform.runLater(() -> {
-            try {
-                Socket downloadSocket = new Socket(ip, port);
-                DataInputStream dis = new DataInputStream(downloadSocket.getInputStream());
-                DataOutputStream dos = new DataOutputStream(downloadSocket.getOutputStream());
+        if (item.isCreatedByConsole()) {
+            ClientConsole.getInstance().addText("Received publish response, file " + filename + " has been found in host's ip is " + ip + ", on port " + port);
+        }
 
-                dos.writeUTF("P2PFS GET \"" + filename +"\"");
-
-                String responsePacket = dis.readUTF();
-
-                Pattern pattern = Pattern.compile("^(?:\\w+)\\s+[Tt][Rr][Aa][NN][Ss][Ff][Ee][Rr]_[Bb][Ee][Gg][Ii][Nn]\\s+length=(\\d+),buffer_size=(\\d+)$");
-                Matcher matcher = pattern.matcher(responsePacket);
-
-                if (!matcher.matches()) {
-                    if (item != null && item.isCreatedByConsole()) {
-                        ClientConsole.getInstance().addText("Host: Ip=" + ip + " port=" + port + " response file not found.");
-                    }
-                    processCancelFetching(filename, "Cancel! File not found in sender host!");
-                }
-                else {
-                    // begin download
-                    FetchItem fetchItem = FetchList.getInstance().getFetchItemFetching(filename);
-                    fetchItem.setStatus("Downloading...");
-
-                    long size = Long.parseLong(matcher.group(1));
-                    int buffer_size = Integer.parseInt(matcher.group(2));
-
-                    if (fetchItem.isCreatedByConsole()) {
-                        ClientConsole.getInstance().addText("Host: Ip=" + ip + " port=" + port + " response file length is " + size + " bytes");
-                        ClientConsole.getInstance().addText("Start download file: " + filename);
-                    }
-
-                    int bytes = 0;
-                    byte[] buffer = new byte[buffer_size];
-
-                    String downloadFile = Client.getInstance().getRepoDir().getPath() + "/" + filename;
-                    FileOutputStream fileOutputStream = new FileOutputStream(downloadFile, false);
-
-                    while (size > 0 &&
-                            (bytes = dis.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
-                        fileOutputStream.write(buffer, 0, bytes);
-                        size -= bytes;
-                    }
-
-                    fileOutputStream.close();
-
-                    // auto pass packet 200 TRANSFER_COMPLETE
-                    fetchItem.setStatus("Download Complete!");
-                    if (fetchItem.isCreatedByConsole()) {
-                        ClientConsole.getInstance().addText("Download file: " + filename + " completed!");
-                    }
-                    Platform.runLater(() -> {
-                        fetchItem.setStatus("Download Complete!");
-                    });
-                }
-
-            } catch (IOException e) {
-                processCancelFetching(filename, "Cancel! Lost connect to Sender!");
+        DownloadFileHandler downloadFileHandler = null;
+        try {
+            downloadFileHandler = new DownloadFileHandler(filename, ip, port);
+        } catch (IOException e) {
+            // Unable create connection
+            String status = "Cancel! Unable to create connection to host: " + ip + " on port: " + port;
+            FetchList.getInstance().getFetchItemFetching(filename).setStatus(status);
+            // Log to console
+            if (item.isCreatedByConsole()) {
+                ClientConsole.getInstance().addText(status);
             }
-        });
+            return;
+        }
+
+        // start download filename
+        new Thread(downloadFileHandler).start();
 
     }
 

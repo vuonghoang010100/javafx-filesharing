@@ -78,17 +78,22 @@ public class ConsoleController implements Initializable {
                 return;
             }
 
-            if (FetchList.getInstance().hasFetchItemWithStatus(fname,"Fetching")) {
+            if (FetchList.getInstance().hasFetchItemStartWithStatus(fname,"Fetching")) {
                 ClientConsole.getInstance().addText("File is fetching. Cancel new fetch command");
                 return;
             }
 
-            if (FetchList.getInstance().hasFetchItemWithStatus(fname,"Downloading...")) {
+            if (FetchList.getInstance().hasFetchItemStartWithStatus(fname,"Start")) {
+                ClientConsole.getInstance().addText("File is fetching. Cancel new fetch command");
+                return;
+            }
+
+            if (FetchList.getInstance().hasFetchItemStartWithStatus(fname,"Downloading")) {
                 ClientConsole.getInstance().addText("File is downloading. Cancel new fetch command");
                 return;
             }
 
-            if (FetchList.getInstance().hasFetchItemWithStatus(fname,"Download Complete!")) {
+            if (FetchList.getInstance().hasFetchItemStartWithStatus(fname,"Download")) {
                 ClientConsole.getInstance().addText("File is already downloaded. Cancel new fetch command");
                 return;
             }

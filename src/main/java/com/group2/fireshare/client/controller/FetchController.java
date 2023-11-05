@@ -44,28 +44,40 @@ public class FetchController implements Initializable {
             return;
         }
 
-        if (FetchList.getInstance().hasFetchItemWithStatus(fetchFilename,"Fetching")) {
+        if (FetchList.getInstance().hasFetchItemStartWithStatus(fetchFilename,"Fetching")) {
             Utils.showAlert(Alert.AlertType.WARNING, "Fetch Warning!", "File is fetching! Stop new fetching!");
             return;
         }
 
-        if (FetchList.getInstance().hasFetchItemWithStatus(fetchFilename,"Downloading...")) {
+        if (FetchList.getInstance().hasFetchItemStartWithStatus(fetchFilename,"Start")) {
+            Utils.showAlert(Alert.AlertType.WARNING, "Fetch Warning!", "File is fetching! Stop new fetching!");
+            return;
+        }
+
+        if (FetchList.getInstance().hasFetchItemStartWithStatus(fetchFilename,"Downloading")) {
             Utils.showAlert(Alert.AlertType.WARNING, "Fetch Warning!", "File is downloading! Stop new fetching!");
             return;
         }
 
-        if (FetchList.getInstance().hasFetchItemWithStatus(fetchFilename,"Download Complete!")) {
+        if (FetchList.getInstance().hasFetchItemStartWithStatus(fetchFilename,"Download")) {
             Utils.showAlert(Alert.AlertType.WARNING, "Fetch Warning!", "File already downloaded! Stop new fetching!");
             return;
         }
+
+//        FetchItem item = new FetchItem(fetchFilename, "Fetching", false);
+        FetchList.getInstance().addFetchItem(new FetchItem(fetchFilename, "Fetching", false));
+
+        // wait
 
         try {
             Client.getInstance().sendFetchPacket(fetchFilename);
         } catch (IOException e) {
             Utils.showAlert(Alert.AlertType.ERROR, "Fetch Error!", "Failed to send fetch packet to server!");
+            FetchList.getInstance().getFetchItemFetching(fetchFilename).setStatus("Cancel! Unable to send FETCH request!");
+//            item.setStatus("Cancel! Unable to send FETCH request!");
         }
 
-        FetchList.getInstance().addFetchItem(new FetchItem(fetchFilename, "Fetching"));
+        fetchFilenameTF.setText("");
     }
 
     @Override

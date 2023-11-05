@@ -56,12 +56,12 @@ public class FetchList {
         return null;
     }
 
-    public synchronized boolean hasFetchItemWithStatus(String name, String status) {
+    public synchronized boolean hasFetchItemStartWithStatus(String name, String status) {
         if (fetchList.isEmpty())
             return false;
 
         for (FetchItem fetchItem: fetchList) {
-            if (fetchItem.getName().equals(name) && fetchItem.getStatus().equals(status)) {
+            if (fetchItem.getName().equals(name) && fetchItem.getStatus().toLowerCase().startsWith(status.toLowerCase())) {
                 return true;
             }
         }
