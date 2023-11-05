@@ -1,10 +1,7 @@
 package com.group2.fireshare.client.service;
 
 import com.group2.fireshare.client.Client;
-import com.group2.fireshare.client.model.ClientConsole;
-import com.group2.fireshare.client.model.FetchItem;
-import com.group2.fireshare.client.model.FetchList;
-import com.group2.fireshare.client.model.Repository;
+import com.group2.fireshare.client.model.*;
 import com.group2.fireshare.utils.Utils;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -15,7 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,10 +56,34 @@ public class SocketHandler implements Runnable{
         // log
         writeLogOnInput(csfsPacket);
 
-        // TODO Process request packet
-        // Ex:
-        //      CSFS PING "1698969514368"
-        //      CSFS DISCOVER
+        // Explain PING packet:
+        // PING packet format: CSFS PING "${hostName}||${timeStart}"
+        // E.g. CSFS PING "LAPTOP-42KF98B0||1698969514368"
+        // We need a time ping to calculate how long since the server receive a reply
+
+        // Explain DISCOVER packet:
+        // DISCOVER packet format: CSFS DISCOVER "${hostName}||${timeStart}"
+        // E.g. CSFS DISCOVER "LAPTOP-42KF98B0||1698969514368"
+        // We need a timeStart to calculate how long since the server receives a reply
+
+        Pattern requestPattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+(DISCOVER|PING)\\s+\"([^\"]+)\"$");
+        Matcher requestMatcher = requestPattern.matcher(csfsPacket);
+
+        if(requestMatcher.matches()) {
+            String method = requestMatcher.group(1).toLowerCase();
+            String requestData = requestMatcher.group(2);
+
+            if (method.equalsIgnoreCase("discover")) {
+                processDiscoverPacket(requestData);
+            } else if (method.equalsIgnoreCase("ping")) {
+                processPingPacket(requestData);
+            } else {
+                processInvalidPacket();
+            }
+
+            return;
+        }
+
 
         // process response packet
         // Ex:
@@ -70,6 +93,7 @@ public class SocketHandler implements Runnable{
         //      CSFS 203 FILE_NOT_FOUND “a.txt”
         Pattern responsePattern = Pattern.compile("^[Cc][Ss][Ff][Ss]\\s+(\\d+)\\s+([a-zA-Z_]+)(?:\\s+\\\"(.+)\\\")?$");
         Matcher responseMatcher = responsePattern.matcher(csfsPacket);
+
         if (responseMatcher.matches()) {
             // This is a response packet
             int code = Integer.parseInt(responseMatcher.group(1));
@@ -86,6 +110,11 @@ public class SocketHandler implements Runnable{
             }
             // pass code 206
         }
+
+
+
+
+
         // Bad request here
     }
 
@@ -170,6 +199,68 @@ public class SocketHandler implements Runnable{
             }
         });
 
+    }
+
+    public  void processDiscoverPacket(String requestData)  {
+        // E.g. CSFS DISCOVER "LAPTOP-42KF98B0||1698969514368"
+
+        // Split the data to get the hostname and the timeStart
+        String[] parts =  requestData.split("\\|\\|");
+        String hostname = parts[0];
+
+        long timeStart = Long.parseLong(parts[1]);
+        long timeMilisec = Calendar.getInstance().getTimeInMillis();
+
+        List<FileItem> files = Repository.getInstance().getFileList();
+        try {
+
+            // Files is empty so we return 205 EMPTY with the hostname and the duration time.
+            if(files.isEmpty()) {
+                this.dos.writeUTF("CSFS 205 EMPTY " + "\"" + hostname + "||" + (timeMilisec - timeStart) +"\"");
+                return;
+            }
+
+
+            // Files is not empty so we return 204 CONTAIN, the hostname,a list of local files and the ducation time.
+            // Format: CSFS 204 CONTAIN "${hostname}||${strBuilder}||${duration}"
+            // E.g. CSFS 204 CONTAIN "LAPTOP-42KF98B0||config.txt--C:\\User\\Admin\\config.txt||40"
+
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.append(hostname);
+            strBuilder.append("||");
+
+            for (FileItem file : files) {
+                strBuilder.append(file.getLname() + "--" + file.getPname());
+                strBuilder.append("||");
+            }
+
+            this.dos.writeUTF("CSFS 204 CONTAIN " + "\"" + strBuilder +(timeMilisec - timeStart) +"\"");
+        }catch (IOException e) {
+            System.out.println("Send response for DISCOVER request failed " + e);
+        }
+    }
+
+    public void processPingPacket(String requestData) {
+        // E.g. CSFS PING "LAPTOP-42KF98B0||1698969514368"
+        // Split the data to get the hostname and the timeStart
+        try {
+            String[] parts =  requestData.split("\\|\\|");
+            String hostname = parts[0];
+            long timeStart = Long.parseLong(parts[1]);
+
+            long timeMilisec = Calendar.getInstance().getTimeInMillis();
+            this.dos.writeUTF("CSFS 200 PING_OK " + "\"" +hostname +"||"+ (timeMilisec - timeStart) +"\"");
+        }catch (IOException e) {
+            System.out.println("Send response for PING request failed " + e);
+        }
+    }
+
+    public void processInvalidPacket() {
+        try {
+            this.dos.writeUTF("CSFS 400 BAD_REQUEST");
+        }catch (IOException e) {
+            System.out.println("Send response for invalid request failed " + e);
+        }
     }
 
     public void processCancelFetching(String filename, String content) {

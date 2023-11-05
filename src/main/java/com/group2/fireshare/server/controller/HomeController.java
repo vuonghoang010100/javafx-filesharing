@@ -1,6 +1,7 @@
 package com.group2.fireshare.server.controller;
 
 import com.group2.fireshare.server.Server;
+import com.group2.fireshare.server.model.Settings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,22 +18,33 @@ public class HomeController implements Initializable {
     private Parent fileView;
     private Parent consoleView;
 
+    private Parent settingsView;
+
     @FXML
-    private BorderPane mainBorderPane;
+    public BorderPane mainBorderPane;
 
     @FXML
     private void switchManageClientsView(ActionEvent e) {
         mainBorderPane.setCenter(clientView);
+        Settings.getInstance().setCurrentView("manageClientsView");
     }
 
     @FXML
     private void switchManageFilesView(ActionEvent e) {
         mainBorderPane.setCenter(fileView);
+        Settings.getInstance().setCurrentView("manageFilesView");
     }
 
     @FXML
     private void switchConsoleView(ActionEvent e) {
         mainBorderPane.setCenter(consoleView);
+        Settings.getInstance().setCurrentView("consoleView");
+    }
+
+    @FXML
+    private void switchSettingsView(ActionEvent e) {
+        mainBorderPane.setCenter(settingsView);
+        Settings.getInstance().setCurrentView("settingsView");
     }
 
 
@@ -47,6 +59,9 @@ public class HomeController implements Initializable {
 
             FXMLLoader loader3 = new FXMLLoader(Server.getInstance().getClass().getResource("fxml/console.fxml"));
             consoleView = (Parent) (loader3.load());
+
+            FXMLLoader loader4 = new FXMLLoader(Server.getInstance().getClass().getResource("fxml/settings.fxml"));
+            settingsView = (Parent) (loader4.load());
         }
         catch (IOException e) {
             e.printStackTrace();

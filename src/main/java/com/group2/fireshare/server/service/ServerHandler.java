@@ -1,5 +1,7 @@
 package com.group2.fireshare.server.service;
 
+import com.group2.fireshare.server.model.Settings;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,8 +15,10 @@ public class ServerHandler implements Runnable {
     public ServerHandler(int port) {
         try {
             serverSocket = new ServerSocket(port);
-            //test log
-            System.out.println("Create Server at ip " + InetAddress.getLocalHost() + ", port " + port);
+            String serverIP = Settings.getInstance().getServerIP();
+            Number serverPort = Settings.getInstance().getServerPort();
+            //test logss
+            System.out.println("Create Server at ip " + serverIP + ", port " + serverPort);
         }
         catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,6 +1,9 @@
 package com.group2.fireshare.client.controller;
 
 import com.group2.fireshare.client.Client;
+import com.group2.fireshare.client.model.ConfigurationReader;
+import com.group2.fireshare.client.model.ConfigurationSaver;
+import com.group2.fireshare.client.model.Constants;
 import com.group2.fireshare.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,6 +16,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -75,6 +79,13 @@ public class LoginController implements Initializable {
             return;
         }
 
+        Properties properties = new Properties();
+        properties.setProperty(Constants.SERVER_IP , ip.getText());
+        properties.setProperty(Constants.SERVER_PORT , port.getText());
+        properties.setProperty(Constants.USER_PORT , listenPort.getText());
+        properties.setProperty(Constants.USER_REPO_PATH , repoFolder.getText());
+        ConfigurationSaver.saveConfigurationToUserData(properties);
+
         // Start SocketServer
         ServerSocket serverSocket = null;
         try {
@@ -104,10 +115,16 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Properties properties = ConfigurationReader.readConfigurationFromUserData();
+        String serverIP = properties.getProperty(Constants.SERVER_IP , "192.168.56.1");
+        String serverPort = properties.getProperty(Constants.SERVER_PORT , "8080");
+        String userPort = properties.getProperty(Constants.USER_PORT , "5000");
+        String userRepoPath = properties.getProperty(Constants.USER_REPO_PATH , "C:\\Users\\Admin\\Downloads");
+
         // Test in my case
-        ip.setText("192.168.1.211");
-        port.setText("8080");
-        listenPort.setText("5000");
-        repoFolder.setText("D:\\a_repo");
+        ip.setText(serverIP);
+        port.setText(serverPort);
+        listenPort.setText(userPort);
+        repoFolder.setText(userRepoPath);
     }
 }

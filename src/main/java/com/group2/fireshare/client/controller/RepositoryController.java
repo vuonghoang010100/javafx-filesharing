@@ -76,6 +76,10 @@ public class RepositoryController implements Initializable {
         // Add File to local repositopy
         Repository.getInstance().addFile(new FileItem(file.getPath(), pname));
 
+        // Reset the text fields
+        pnameTextField.setText("");
+        lnameTextField.setText("");
+
         // Send publish packet
         try {
             Client.getInstance().sendPublishPacket(pname);
