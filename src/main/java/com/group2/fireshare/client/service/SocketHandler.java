@@ -202,27 +202,28 @@ public class SocketHandler implements Runnable{
     }
 
     public  void processDiscoverPacket(String requestData)  {
-        // E.g. CSFS DISCOVER "LAPTOP-42KF98B0||1698969514368"
+        // E.g. CSFS DISCOVER "LAPTOP-42KF98B0||${timeStart}"
 
         // Split the data to get the hostname and the timeStart
         String[] parts =  requestData.split("\\|\\|");
         String hostname = parts[0];
-
-        long timeStart = Long.parseLong(parts[1]);
-        long timeMilisec = Calendar.getInstance().getTimeInMillis();
+        String timeStart = parts[1];
 
         List<FileItem> files = Repository.getInstance().getFileList();
         try {
 
-            // Files is empty so we return 205 EMPTY with the hostname and the duration time.
+            // Files is empty so we return 205 EMPTY with the hostname and the time start.
+            // We reply the time start so the server can calculate the duration by itself.
             if(files.isEmpty()) {
-                this.dos.writeUTF("CSFS 205 EMPTY " + "\"" + hostname + "||" + (timeMilisec - timeStart) +"\"");
+                this.dos.writeUTF("CSFS 205 EMPTY " + "\"" + hostname + "||" + timeStart +"\"");
                 return;
             }
 
 
-            // Files is not empty so we return 204 CONTAIN, the hostname,a list of local files and the ducation time.
-            // Format: CSFS 204 CONTAIN "${hostname}||${strBuilder}||${duration}"
+            // Files is not empty so we return 204 CONTAIN, the hostname,a list of local files and the time start.
+            // We reply the time start so the server can calculate the duration by itself.
+
+            // Format: CSFS 204 CONTAIN "${hostname}||${strBuilder}||${timeStart}"
             // E.g. CSFS 204 CONTAIN "LAPTOP-42KF98B0||config.txt--C:\\User\\Admin\\config.txt||40"
 
             StringBuilder strBuilder = new StringBuilder();
@@ -234,7 +235,7 @@ public class SocketHandler implements Runnable{
                 strBuilder.append("||");
             }
 
-            this.dos.writeUTF("CSFS 204 CONTAIN " + "\"" + strBuilder +(timeMilisec - timeStart) +"\"");
+            this.dos.writeUTF("CSFS 204 CONTAIN " + "\"" + strBuilder + timeStart +"\"");
         }catch (IOException e) {
             System.out.println("Send response for DISCOVER request failed " + e);
         }
@@ -242,14 +243,15 @@ public class SocketHandler implements Runnable{
 
     public void processPingPacket(String requestData) {
         // E.g. CSFS PING "LAPTOP-42KF98B0||1698969514368"
-        // Split the data to get the hostname and the timeStart
+        // Split the data to get the hostname and the timeStart.
+        // We reply the time start so the server can calculate the duration by itself.
+
         try {
             String[] parts =  requestData.split("\\|\\|");
             String hostname = parts[0];
-            long timeStart = Long.parseLong(parts[1]);
+            String timeStart = parts[1];
 
-            long timeMilisec = Calendar.getInstance().getTimeInMillis();
-            this.dos.writeUTF("CSFS 200 PING_OK " + "\"" +hostname +"||"+ (timeMilisec - timeStart) +"\"");
+            this.dos.writeUTF("CSFS 200 PING_OK " + "\"" +hostname +"||"+ timeStart +"\"");
         }catch (IOException e) {
             System.out.println("Send response for PING request failed " + e);
         }

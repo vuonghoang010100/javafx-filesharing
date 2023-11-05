@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -212,7 +213,9 @@ public class ClientHandler implements Runnable {
 
         String[] parts = responseData.split("\\|\\|");
         String hostName = parts[0];
-        String timeReply = parts[parts.length - 1];
+        long timeStart = Long.parseLong(parts[parts.length - 1]);
+        long currentTIme = Calendar.getInstance().getTimeInMillis();
+        long duration = currentTIme - timeStart;
 
         // Count the number of files, divide two because
         // the first is the hostname and the last are the duration time.
@@ -221,7 +224,7 @@ public class ClientHandler implements Runnable {
 
         // Users is working on ConsoleView so we add the text to it.
         if (isConsoleViewVisible) {
-            ServerConsole.getInstance().addText(hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + timeReply + " ms.");
+            ServerConsole.getInstance().addText(hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + duration + " ms.");
             for (int i = 1 ; i < parts.length - 1 ; i++) {
                 String part = parts[i];
                 String[] arr = part.split("--");
@@ -235,7 +238,7 @@ public class ClientHandler implements Runnable {
 
         Platform.runLater(() -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + timeReply + " ms.\n");
+            stringBuilder.append(hostName + " contains " + filesCount + " local " + fileOrFiles +"! Reply in " + duration + " ms.\n");
             stringBuilder.append("--------------------\n");
 
             for (int i = 1 ; i < parts.length - 1 ; i++) {
@@ -263,39 +266,47 @@ public class ClientHandler implements Runnable {
 
         String[] parts = responseData.split("\\|\\|");
         String hostName = parts[0];
-        String timeReply = parts[1];
+
+        // Calculate the duration
+        long timeStart = Long.parseLong(parts[1]);
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+        long duration = currentTime - timeStart;
 
         // Users is working on ConsoleView so we add the text to it.
         if (isConsoleViewVisible) {
-            ServerConsole.getInstance().addText(hostName +" contains 0 local file! Reply in " + timeReply +" ms.");
+            ServerConsole.getInstance().addText(hostName +" contains 0 local file! Reply in " + duration +" ms.");
             ServerConsole.getInstance().addText("-------------------------");
             return;
         }
 
         Platform.runLater(() -> {
-            Utils.showAlert(Alert.AlertType.INFORMATION , "DISCOVER " + hostName ,  hostName +" contains 0 local file! Reply in " + timeReply +" ms.");
+            Utils.showAlert(Alert.AlertType.INFORMATION , "DISCOVER " + hostName ,  hostName +" contains 0 local file! Reply in " + duration +" ms.");
         });
 
     }
     public void processStatusCode200(String responseData) throws IOException {
         boolean isConsoleViewVisible = Settings.getInstance().isConsoleViewVisible();
 
-        // E.g. CSFS 205 PING_OK "LATOP--42KF98B0||40"
-        // We parse the text to get the hostname and the duration time.
+        // E.g. CSFS 205 PING_OK "LATOP--42KF98B0||${timeStart}"
+        // We parse the text to get the hostname and the time start.
 
         String[] parts = responseData.split("\\|\\|");
         String hostName = parts[0];
-        String timeReply = parts[1];
+
+        // Calculate the duration
+        long timeStart = Long.parseLong(parts[1]);
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+        long duration = currentTime - timeStart;
 
         // Users is working on ConsoleView so we add the text to it.
         if (isConsoleViewVisible) {
-            ServerConsole.getInstance().addText(hostName +" is connecting with the server! Reply in " + timeReply +" ms.");
+            ServerConsole.getInstance().addText(hostName +" is connecting with the server! Reply in " + duration +" ms.");
             ServerConsole.getInstance().addText("-------------------------");
             return;
         }
 
         Platform.runLater(() -> {
-            Utils.showAlert(Alert.AlertType.INFORMATION , "Ping " + hostName ,  hostName +" is connecting with server! Reply in " + timeReply +" ms.");
+            Utils.showAlert(Alert.AlertType.INFORMATION , "Ping " + hostName ,  hostName +" is connecting with server! Reply in " + duration +" ms.");
         });
     }
 
